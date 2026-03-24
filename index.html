@@ -403,7 +403,7 @@ class Main extends PluginBase implements Listener {
                     Back
                 </button>
                 <h2 class="section-title pixel-font">Plugin <span class="accent">Search</span></h2>
-                <p class="section-desc">Search GitHub for PocketMine-MP plugins. Results are fetched live from the GitHub API.</p>
+                <p class="section-desc">Search plugins from Poggit (official PMMP repository) and GitHub. Finds real PocketMine plugins by detecting <code>plugin.yml</code> and <code>.poggit.yml</code> files.</p>
 
                 <div class="search-bar">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="search-bar__icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -412,11 +412,21 @@ class Main extends PluginBase implements Listener {
                 </div>
 
                 <div class="search-filters">
-                    <button class="filter-chip active" data-topic="pocketmine-mp">pocketmine-mp</button>
-                    <button class="filter-chip" data-topic="pocketmine">pocketmine</button>
-                    <button class="filter-chip" data-topic="pmmp">pmmp</button>
-                    <button class="filter-chip" data-topic="pocketmine-plugin">pocketmine-plugin</button>
+                    <button class="filter-chip active" data-source="poggit">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        Poggit
+                    </button>
+                    <button class="filter-chip" data-source="github-code">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                        GitHub (plugin.yml)
+                    </button>
+                    <button class="filter-chip" data-source="github-poggit">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        GitHub (.poggit.yml)
+                    </button>
                 </div>
+
+                <div class="search-stats" id="searchStats" style="display:none"></div>
 
                 <div class="search-results" id="searchResults">
                     <div class="search-empty">

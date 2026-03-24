@@ -997,6 +997,63 @@ a:hover { color: var(--accent-hover); }
     color: var(--accent);
 }
 
+.search-card__link--download {
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.search-card__badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+    margin-left: 8px;
+    font-family: var(--font-body);
+}
+
+.search-card__badge--poggit {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.search-card__badge--github {
+    background: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.search-stats {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 8px 0;
+    margin-bottom: 8px;
+}
+
+.search-stats code {
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.search-card__name mark {
+    background: rgba(16, 185, 129, 0.25);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.filter-chip svg {
+    vertical-align: -2px;
+    margin-right: 4px;
+}
+
 @media (max-width: 480px) {
     .search-card {
         flex-direction: column;
