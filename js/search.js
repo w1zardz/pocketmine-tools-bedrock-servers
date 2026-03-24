@@ -1,5 +1,6 @@
 /* ============================================
-   Plugin Search — Poggit + GitHub Code Search
+   Plugin Search — Poggit API + GitHub Repo Search
+   (no auth required, no Code Search API)
    ============================================ */
 
 (function() {
@@ -47,8 +48,8 @@
         try {
             switch (currentSource) {
                 case 'poggit': await searchPoggit(query); break;
-                case 'github-code': await searchGitHubCode(query, 'plugin.yml'); break;
-                case 'github-poggit': await searchGitHubCode(query, '.poggit.yml'); break;
+                case 'github-code': await searchGitHubRepos(query, 'pocketmine'); break;
+                case 'github-poggit': await searchGitHubRepos(query, 'pmmp'); break;
             }
         } catch (err) {
             showError(err.message);
@@ -56,155 +57,108 @@
     }
 
     // ===== POGGIT SEARCH =====
-    // Strategy: search by exact name first, then try repo search on GitHub for poggit plugins
+    // Poggit ?name= supports CORS and finds exact match.
+    // We also fire a GitHub repo search in parallel to find more results.
     async function searchPoggit(query) {
-        // 1) Try exact name match from Poggit API (has CORS)
-        const poggitResults = [];
+        // Fire both requests in parallel
+        const [poggitResult, githubResult] = await Promise.allSettled([
+            fetchPoggit(query),
+            fetchGitHubRepos(query, 'pocketmine', 1, 15)
+        ]);
 
-        try {
-            const resp = await fetch(`https://poggit.pmmp.io/releases.json?name=${encodeURIComponent(query)}`);
-            if (resp.ok) {
-                const data = await resp.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    // Deduplicate: keep latest version per plugin name
-                    const map = new Map();
-                    for (const p of data) {
-                        const existing = map.get(p.name);
-                        if (!existing || (p.submission_date || 0) > (existing.submission_date || 0)) {
-                            map.set(p.name, p);
-                        }
-                    }
-                    poggitResults.push(...map.values());
-                }
-            }
-        } catch (e) { /* Poggit down, continue to GitHub fallback */ }
+        const poggitPlugins = poggitResult.status === 'fulfilled' ? poggitResult.value : [];
+        const githubData = githubResult.status === 'fulfilled' ? githubResult.value : null;
+        const githubRepos = githubData?.items || [];
 
-        // 2) Also search GitHub for repos with .poggit.yml containing the query
-        //    This finds plugins that may have different names
-        let githubPoggitResults = [];
-        try {
-            const ghResp = await fetch(
-                `https://api.github.com/search/code?q=${encodeURIComponent(query)}+filename:plugin.yml+path:/&per_page=20&page=${currentPage}`,
-                { headers: { 'Accept': 'application/vnd.github.v3+json' } }
-            );
-            if (ghResp.ok) {
-                const ghData = await ghResp.json();
-                totalPages = Math.min(Math.ceil((ghData.total_count || 0) / 20), 50);
-
-                // Deduplicate repos
-                const repoMap = new Map();
-                for (const item of (ghData.items || [])) {
-                    const name = item.repository.full_name;
-                    if (!repoMap.has(name)) repoMap.set(name, item.repository);
-                }
-                githubPoggitResults = [...repoMap.values()];
-            }
-        } catch (e) { /* GitHub down */ }
-
-        // 3) Merge: Poggit results first (exact match), then GitHub repos
-        if (poggitResults.length === 0 && githubPoggitResults.length === 0) {
+        if (poggitPlugins.length === 0 && githubRepos.length === 0) {
             showEmpty(`No plugins found for "${query}". Try a different name.`);
             return;
         }
 
         resultsContainer.innerHTML = '';
 
-        const totalCount = poggitResults.length + githubPoggitResults.length;
+        // Stats
         let statsText = '';
-        if (poggitResults.length > 0) statsText += `${poggitResults.length} from Poggit`;
-        if (githubPoggitResults.length > 0) {
+        if (poggitPlugins.length > 0) statsText += `${poggitPlugins.length} from Poggit`;
+        if (githubRepos.length > 0) {
             if (statsText) statsText += ' + ';
-            statsText += `${githubPoggitResults.length} from GitHub`;
+            statsText += `${githubRepos.length} from GitHub`;
         }
-        showStats(`Found ${totalCount} result${totalCount !== 1 ? 's' : ''} (${statsText})`);
+        const total = poggitPlugins.length + githubRepos.length;
+        showStats(`Found ${total} result${total !== 1 ? 's' : ''} (${statsText})`);
 
-        // Render Poggit results
-        for (const plugin of poggitResults) {
+        // Render Poggit results first
+        for (const plugin of poggitPlugins) {
             resultsContainer.appendChild(createPoggitCard(plugin));
         }
 
-        // Render GitHub results (fetch details in parallel)
-        if (githubPoggitResults.length > 0) {
-            const details = await Promise.allSettled(
-                githubPoggitResults.map(r =>
-                    fetch(`https://api.github.com/repos/${r.full_name}`, {
-                        headers: { 'Accept': 'application/vnd.github.v3+json' }
-                    }).then(resp => resp.ok ? resp.json() : r).catch(() => r)
-                )
-            );
-            details.forEach((result, i) => {
-                const repo = result.status === 'fulfilled' ? result.value : githubPoggitResults[i];
-                // Skip if already shown as Poggit result
-                const repoName = repo.full_name || '';
-                const isDuplicate = poggitResults.some(p => p.repo_name === repoName);
-                if (!isDuplicate) {
-                    resultsContainer.appendChild(createGitHubCard(repo, 'plugin.yml'));
-                }
-            });
+        // Render GitHub results, skip duplicates
+        const poggitRepoNames = new Set(poggitPlugins.map(p => (p.repo_name || '').toLowerCase()));
+        for (const repo of githubRepos) {
+            if (!poggitRepoNames.has((repo.full_name || '').toLowerCase())) {
+                resultsContainer.appendChild(createGitHubCard(repo));
+            }
         }
 
-        if (poggitResults.length > 0 || totalPages <= 1) {
-            // For Poggit exact matches + small result set, hide pagination
-            if (githubPoggitResults.length <= 0) {
-                pagination.style.display = 'none';
-            } else {
-                updatePagination();
-            }
-        } else {
+        // Pagination based on GitHub results
+        if (githubData && githubData.total_count > 15) {
+            totalPages = Math.min(Math.ceil(githubData.total_count / 15), 50);
             updatePagination();
+        } else {
+            pagination.style.display = 'none';
         }
     }
 
-    // ===== GITHUB CODE SEARCH =====
-    async function searchGitHubCode(query, filename) {
-        const perPage = 15;
-        const searchTerm = `${query} filename:${filename} path:/`;
-        const url = `https://api.github.com/search/code?q=${encodeURIComponent(searchTerm)}&per_page=${perPage}&page=${currentPage}`;
+    async function fetchPoggit(query) {
+        const resp = await fetch(`https://poggit.pmmp.io/releases.json?name=${encodeURIComponent(query)}`);
+        if (!resp.ok) return [];
+        const data = await resp.json();
+        if (!Array.isArray(data) || data.length === 0) return [];
 
-        const response = await fetch(url, {
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
-
-        if (!response.ok) {
-            if (response.status === 403) throw new Error('GitHub API rate limit. Wait a minute or try Poggit search.');
-            if (response.status === 422) throw new Error('Search query too broad. Try a more specific name.');
-            throw new Error('GitHub API error: ' + response.status);
+        // Deduplicate: keep latest version per plugin name
+        const map = new Map();
+        for (const p of data) {
+            const existing = map.get(p.name);
+            if (!existing || (p.submission_date || 0) > (existing.submission_date || 0)) {
+                map.set(p.name, p);
+            }
         }
+        return [...map.values()];
+    }
 
-        const data = await response.json();
-        if (!data.items || data.items.length === 0) {
-            showEmpty(`No repos with "${filename}" found for "${query}".`);
+    // ===== GITHUB REPOSITORY SEARCH =====
+    // Uses /search/repositories (no auth needed, 10 req/min for unauthenticated)
+    async function searchGitHubRepos(query, extraKeyword) {
+        const data = await fetchGitHubRepos(query, extraKeyword, currentPage, 15);
+        if (!data || !data.items || data.items.length === 0) {
+            showEmpty(`No GitHub repositories found for "${query}".`);
             return;
         }
 
-        // Deduplicate repos
-        const repoMap = new Map();
-        for (const item of data.items) {
-            const name = item.repository.full_name;
-            if (!repoMap.has(name)) repoMap.set(name, item.repository);
-        }
-        const repos = [...repoMap.values()];
-
-        totalPages = Math.min(Math.ceil(data.total_count / perPage), 50);
-        showStats(`Found ${data.total_count.toLocaleString()} repos with <code>${filename}</code> matching "${query}"`);
+        totalPages = Math.min(Math.ceil(data.total_count / 15), 50);
+        showStats(`Found ${data.total_count.toLocaleString()} repositories on GitHub`);
 
         resultsContainer.innerHTML = '';
+        for (const repo of data.items) {
+            resultsContainer.appendChild(createGitHubCard(repo));
+        }
+        updatePagination();
+    }
 
-        // Fetch full details in parallel
-        const details = await Promise.allSettled(
-            repos.map(r =>
-                fetch(`https://api.github.com/repos/${r.full_name}`, {
-                    headers: { 'Accept': 'application/vnd.github.v3+json' }
-                }).then(resp => resp.ok ? resp.json() : r).catch(() => r)
-            )
-        );
+    async function fetchGitHubRepos(query, extraKeyword, page, perPage) {
+        // Search: query + pocketmine/pmmp keyword + PHP language
+        const searchTerm = `${query} ${extraKeyword} language:php`;
+        const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(searchTerm)}&sort=stars&order=desc&per_page=${perPage}&page=${page}`;
 
-        details.forEach((result, i) => {
-            const repo = result.status === 'fulfilled' ? result.value : repos[i];
-            resultsContainer.appendChild(createGitHubCard(repo, filename));
+        const resp = await fetch(url, {
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
 
-        updatePagination();
+        if (!resp.ok) {
+            if (resp.status === 403) throw new Error('GitHub API rate limit (10 req/min without auth). Wait a minute.');
+            throw new Error('GitHub API error: ' + resp.status);
+        }
+        return resp.json();
     }
 
     // ===== CARD RENDERERS =====
@@ -221,7 +175,7 @@
         const apiStr = formatApi(plugin.api);
 
         card.innerHTML = `
-            <img class="search-card__avatar" src="${iconUrl}" alt="${plugin.name}" loading="lazy" width="44" height="44" onerror="this.src='${defaultIcon()}'">
+            <img class="search-card__avatar" src="${iconUrl}" alt="${escAttr(plugin.name)}" loading="lazy" width="44" height="44" onerror="this.src='${defaultIcon()}'">
             <div class="search-card__body">
                 <h3 class="search-card__name">
                     <a href="${pluginUrl}" target="_blank" rel="noopener">${highlightMatch(plugin.name, currentQuery)}</a>
@@ -233,8 +187,8 @@
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         ${downloads}
                     </span>
-                    <span class="search-card__stat" title="Version">v${plugin.version || '?'}</span>
-                    ${apiStr ? `<span class="search-card__stat" title="API">API: ${apiStr}</span>` : ''}
+                    <span class="search-card__stat" title="Version">v${escHtml(plugin.version || '?')}</span>
+                    ${apiStr ? `<span class="search-card__stat" title="API">API: ${escHtml(apiStr)}</span>` : ''}
                     ${updated ? `<span class="search-card__stat">Released ${updated}</span>` : ''}
                 </div>
                 <div class="search-card__links">
@@ -247,20 +201,19 @@
         return card;
     }
 
-    function createGitHubCard(repo, fileMarker) {
+    function createGitHubCard(repo) {
         const card = document.createElement('div');
         card.className = 'search-card';
 
         const updated = timeAgo(new Date(repo.updated_at || repo.pushed_at || Date.now()));
         const avatarUrl = repo.owner?.avatar_url || '';
-        const badgeLabel = fileMarker === '.poggit.yml' ? '.poggit.yml' : 'plugin.yml';
 
         card.innerHTML = `
-            <img class="search-card__avatar" src="${avatarUrl}&s=88" alt="${repo.owner?.login || ''}" loading="lazy" width="44" height="44">
+            <img class="search-card__avatar" src="${avatarUrl}&s=88" alt="${escAttr(repo.owner?.login || '')}" loading="lazy" width="44" height="44">
             <div class="search-card__body">
                 <h3 class="search-card__name">
                     <a href="${repo.html_url}" target="_blank" rel="noopener">${highlightMatch(repo.full_name || repo.name, currentQuery)}</a>
-                    <span class="search-card__badge search-card__badge--github">${badgeLabel}</span>
+                    <span class="search-card__badge search-card__badge--github">GitHub</span>
                 </h3>
                 <p class="search-card__desc">${escHtml(repo.description || 'No description provided')}</p>
                 <div class="search-card__meta">
@@ -272,13 +225,13 @@
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                         ${(repo.forks_count || 0).toLocaleString()} forks
                     </span>
-                    ${repo.language ? `<span class="search-card__stat">${repo.language}</span>` : ''}
+                    ${repo.language ? `<span class="search-card__stat">${escHtml(repo.language)}</span>` : ''}
                     <span class="search-card__stat">Updated ${updated}</span>
                 </div>
                 <div class="search-card__links">
                     <a class="search-card__link" href="${repo.html_url}" target="_blank" rel="noopener">Repository</a>
                     <a class="search-card__link" href="${repo.html_url}/releases" target="_blank" rel="noopener">Releases</a>
-                    ${repo.homepage ? `<a class="search-card__link" href="${repo.homepage}" target="_blank" rel="noopener">Website</a>` : ''}
+                    ${repo.homepage ? `<a class="search-card__link" href="${escAttr(repo.homepage)}" target="_blank" rel="noopener">Website</a>` : ''}
                 </div>
             </div>
         `;
@@ -301,6 +254,10 @@
         const d = document.createElement('div');
         d.textContent = str;
         return d.innerHTML;
+    }
+
+    function escAttr(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
     function highlightMatch(text, query) {
