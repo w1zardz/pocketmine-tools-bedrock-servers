@@ -13,6 +13,7 @@
     let totalPages = 1;
     let currentQuery = '';
     let currentSource = 'poggit';
+    let browsingRecent = false;
 
     const searchInput = $('#pluginSearchInput');
     const searchBtn = $('#pluginSearchBtn');
@@ -36,8 +37,8 @@
         });
     });
 
-    prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; doSearch(); } });
-    nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; doSearch(); } });
+    prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; browsingRecent ? loadRecent() : doSearch(); } });
+    nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; browsingRecent ? loadRecent() : doSearch(); } });
 
     // Load recent plugins when section becomes visible
     let recentLoaded = false;
@@ -65,22 +66,24 @@
     });
 
     async function loadRecent() {
+        browsingRecent = true;
         showLoading();
         try {
-            // Fetch recent from GitHub (recently updated pocketmine PHP repos)
+            const perPage = 15;
             const resp = await fetch(
-                'https://api.github.com/search/repositories?q=pocketmine+language:php&sort=updated&order=desc&per_page=15',
+                `https://api.github.com/search/repositories?q=pocketmine+language:php&sort=updated&order=desc&per_page=${perPage}&page=${currentPage}`,
                 { headers: { 'Accept': 'application/vnd.github.v3+json' } }
             );
             if (!resp.ok) throw new Error('GitHub API error');
             const data = await resp.json();
 
-            showStats('Recently updated PocketMine plugins');
+            totalPages = Math.min(Math.ceil((data.total_count || 0) / perPage), 50);
+            showStats(`Recently updated PocketMine plugins (${(data.total_count || 0).toLocaleString()} total)`);
             resultsContainer.innerHTML = '';
             for (const repo of (data.items || [])) {
                 resultsContainer.appendChild(createGitHubCard(repo));
             }
-            pagination.style.display = 'none';
+            updatePagination();
         } catch (e) {
             showEmpty('Search for PocketMine plugins to get started');
         }
@@ -89,11 +92,11 @@
     async function doSearch() {
         const query = searchInput.value.trim();
         if (!query) {
-            // If empty query, show recent plugins
-            recentLoaded = false;
+            browsingRecent = true;
             loadRecent();
             return;
         }
+        browsingRecent = false;
         currentQuery = query;
         showLoading();
 
