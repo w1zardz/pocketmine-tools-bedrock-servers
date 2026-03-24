@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://your-username.github.io/pocketmine-tools-bedrock-servers/sitemap.xml

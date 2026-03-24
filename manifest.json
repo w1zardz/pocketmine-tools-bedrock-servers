@@ -1,0 +1,20 @@
+{
+    "name": "PocketMine Tools",
+    "short_name": "PM Tools",
+    "description": "Free online tools for PocketMine-MP server developers. PHAR creator, plugin search, crash parser, server pinger and more.",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#0f1117",
+    "theme_color": "#10b981",
+    "orientation": "any",
+    "categories": ["developer", "utilities"],
+    "lang": "en",
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%230f1117'/><rect x='96' y='96' width='128' height='128' rx='24' fill='%2310b981'/><rect x='288' y='96' width='128' height='128' rx='24' fill='%2310b981' opacity='0.6'/><rect x='96' y='288' width='128' height='128' rx='24' fill='%2310b981' opacity='0.6'/><rect x='288' y='288' width='128' height='128' rx='24' fill='%2310b981' opacity='0.3'/></svg>",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}

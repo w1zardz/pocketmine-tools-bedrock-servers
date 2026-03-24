@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>PocketMine Tools — Online PHAR Creator, Plugin Search & Server Tools for MCPE/Bedrock</title>
+    <meta name="description" content="Free online tools for PocketMine-MP (PMMP) server developers. Create PHAR plugins, search GitHub for plugins, parse crash dumps, ping Bedrock/MCPE servers, generate MOTD and plugin templates. All client-side, no upload needed.">
+    <meta name="keywords" content="pocketmine, pmmp, pocketmine-mp, phar, phar creator, phar extractor, minecraft bedrock, mcpe, pocket edition, server tools, plugin creator, crash dump parser, motd generator, server pinger, plugin search, bedrock server tools">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+    <meta name="author" content="PocketMine Tools">
+    <link rel="canonical" href="https://w1zardz.github.io/pocketmine-tools-bedrock-servers/">
+    <meta name="theme-color" content="#10b981">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PocketMine Tools — Online PHAR Creator, Plugin Search & Server Tools">
+    <meta property="og:description" content="Free online tools for PocketMine-MP server developers. Create PHAR plugins, search plugins, parse crash dumps, ping servers and more.">
+    <meta property="og:url" content="https://w1zardz.github.io/pocketmine-tools-bedrock-servers/">
+    <meta property="og:site_name" content="PocketMine Tools">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="ru_RU">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PocketMine Tools — Online PHAR Creator, Plugin Search & Server Tools">
+    <meta name="twitter:description" content="Free online tools for PocketMine-MP server developers. All client-side, instant results.">
+
+    <!-- hreflang -->
+    <link rel="alternate" hreflang="en" href="https://w1zardz.github.io/pocketmine-tools-bedrock-servers/">
+    <link rel="alternate" hreflang="ru" href="https://w1zardz.github.io/pocketmine-tools-bedrock-servers/?lang=ru">
+    <link rel="alternate" hreflang="x-default" href="https://w1zardz.github.io/pocketmine-tools-bedrock-servers/">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- CDN Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Critical inline CSS -->
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#0f1117;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;overflow-x:hidden}
+        .loader-screen{position:fixed;inset:0;background:#0f1117;display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+        .loader-screen.hidden{opacity:0;pointer-events:none}
+        .loader-dot{width:12px;height:12px;background:#10b981;border-radius:50%;margin:0 6px;animation:bounce .6s infinite alternate}
+        .loader-dot:nth-child(2){animation-delay:.2s}.loader-dot:nth-child(3){animation-delay:.4s}
+        @keyframes bounce{to{transform:translateY(-16px);opacity:.3}}
+    </style>
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "PocketMine Tools",
+        "description": "Free online tools for PocketMine-MP (PMMP) server developers. Create PHAR plugins, search GitHub for plugins, parse crash dumps, ping Bedrock servers, generate MOTD and plugin templates.",
+        "url": "https://w1zardz.github.io/pocketmine-tools-bedrock-servers/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "PHAR Creator for PocketMine plugins",
+            "PHAR Extractor and viewer",
+            "GitHub Plugin Search",
+            "Crash Dump Parser",
+            "Plugin Template Generator",
+            "Bedrock Server Pinger",
+            "MOTD Generator with Minecraft colors",
+            "Nickname Generator with color codes"
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PocketMine Tools",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "availableOnDevice": "Desktop, Mobile, Tablet",
+        "softwareVersion": "1.0.0",
+        "author": {
+            "@type": "Organization",
+            "name": "PocketMine Tools"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader-screen" id="loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="header__inner">
+            <a href="#" class="header__logo" aria-label="PocketMine Tools Home">
+                <svg class="header__logo-icon" viewBox="0 0 32 32" width="32" height="32" fill="none">
+                    <rect x="2" y="2" width="28" height="28" rx="6" fill="#10b981" opacity="0.15"/>
+                    <rect x="6" y="6" width="8" height="8" rx="2" fill="#10b981"/>
+                    <rect x="18" y="6" width="8" height="8" rx="2" fill="#10b981" opacity="0.6"/>
+                    <rect x="6" y="18" width="8" height="8" rx="2" fill="#10b981" opacity="0.6"/>
+                    <rect x="18" y="18" width="8" height="8" rx="2" fill="#10b981" opacity="0.3"/>
+                </svg>
+                <span class="header__logo-text">PM<span class="accent">Tools</span></span>
+            </a>
+            <nav class="header__nav" id="desktopNav">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#phar-creator" class="nav-link" data-section="phar-creator">PHAR Creator</a>
+                <a href="#phar-extractor" class="nav-link" data-section="phar-extractor">Extractor</a>
+                <a href="#plugin-search" class="nav-link" data-section="plugin-search">Search</a>
+                <a href="#crash-parser" class="nav-link" data-section="crash-parser">Crash Parser</a>
+                <a href="#template-gen" class="nav-link" data-section="template-gen">Templates</a>
+                <a href="#server-pinger" class="nav-link" data-section="server-pinger">Pinger</a>
+                <a href="#motd-gen" class="nav-link" data-section="motd-gen">MOTD</a>
+                <a href="#nick-gen" class="nav-link" data-section="nick-gen">Nickname</a>
+            </nav>
+            <button class="header__menu-btn" id="menuBtn" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-menu__nav">
+            <a href="#home" class="mobile-menu__link active" data-section="home">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                Home
+            </a>
+            <a href="#phar-creator" class="mobile-menu__link" data-section="phar-creator">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                PHAR Creator
+            </a>
+            <a href="#phar-extractor" class="mobile-menu__link" data-section="phar-extractor">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Extractor
+            </a>
+            <a href="#plugin-search" class="mobile-menu__link" data-section="plugin-search">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Plugin Search
+            </a>
+            <a href="#crash-parser" class="mobile-menu__link" data-section="crash-parser">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Crash Parser
+            </a>
+            <a href="#template-gen" class="mobile-menu__link" data-section="template-gen">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Templates
+            </a>
+            <a href="#server-pinger" class="mobile-menu__link" data-section="server-pinger">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Server Pinger
+            </a>
+            <a href="#motd-gen" class="mobile-menu__link" data-section="motd-gen">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2"/><circle cx="6" cy="12" r="3"/></svg>
+                MOTD Generator
+            </a>
+            <a href="#nick-gen" class="mobile-menu__link" data-section="nick-gen">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Nickname Gen
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main" id="main">
+
+        <!-- HOME SECTION -->
+        <section class="section section--active" id="home" data-section="home">
+            <div class="container">
+                <div class="hero">
+                    <div class="hero__particles" id="particles"></div>
+                    <h1 class="hero__title pixel-font">PocketMine<br><span class="accent">Tools</span></h1>
+                    <p class="hero__subtitle">Free online developer tools for <strong>PocketMine-MP</strong> / <strong>PMMP</strong> servers. Create plugins, search packages, debug crashes, and more &mdash; all in your browser.</p>
+                    <div class="hero__badges">
+                        <span class="badge badge--green">100% Free</span>
+                        <span class="badge badge--blue">Client-Side</span>
+                        <span class="badge badge--purple">No Upload</span>
+                        <span class="badge badge--orange">Open Source</span>
+                    </div>
+                </div>
+
+                <h2 class="section-title">All Tools</h2>
+                <div class="tools-grid" id="toolsGrid">
+                    <article class="tool-card" data-tool="phar-creator" tabindex="0" role="button" aria-label="Open PHAR Creator tool">
+                        <div class="tool-card__icon tool-card__icon--green">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">PHAR Creator</h3>
+                        <p class="tool-card__desc">Build .phar plugin files from source code directly in your browser</p>
+                        <span class="tool-card__badge">Builder</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="phar-extractor" tabindex="0" role="button" aria-label="Open PHAR Extractor tool">
+                        <div class="tool-card__icon tool-card__icon--blue">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">PHAR Extractor</h3>
+                        <p class="tool-card__desc">Upload and extract .phar files, browse contents and download as ZIP</p>
+                        <span class="tool-card__badge">Extractor</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="plugin-search" tabindex="0" role="button" aria-label="Open Plugin Search tool">
+                        <div class="tool-card__icon tool-card__icon--purple">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">Plugin Search</h3>
+                        <p class="tool-card__desc">Search GitHub for PocketMine-MP plugins, sorted by stars and activity</p>
+                        <span class="tool-card__badge">Search</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="crash-parser" tabindex="0" role="button" aria-label="Open Crash Dump Parser tool">
+                        <div class="tool-card__icon tool-card__icon--red">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">Crash Parser</h3>
+                        <p class="tool-card__desc">Parse PocketMine crash dumps with color-coded sections and analysis</p>
+                        <span class="tool-card__badge">Debug</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="template-gen" tabindex="0" role="button" aria-label="Open Plugin Template Generator tool">
+                        <div class="tool-card__icon tool-card__icon--cyan">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">Template Generator</h3>
+                        <p class="tool-card__desc">Generate plugin boilerplate with proper namespace structure</p>
+                        <span class="tool-card__badge">Generator</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="server-pinger" tabindex="0" role="button" aria-label="Open Server Pinger tool">
+                        <div class="tool-card__icon tool-card__icon--yellow">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">Server Pinger</h3>
+                        <p class="tool-card__desc">Ping Bedrock/MCPE servers and view MOTD, players, version info</p>
+                        <span class="tool-card__badge">Network</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="motd-gen" tabindex="0" role="button" aria-label="Open MOTD Generator tool">
+                        <div class="tool-card__icon tool-card__icon--pink">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="17" r="2"/><circle cx="6" cy="12" r="3"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">MOTD Generator</h3>
+                        <p class="tool-card__desc">Create colorful server MOTD with Minecraft formatting codes</p>
+                        <span class="tool-card__badge">Visual</span>
+                    </article>
+
+                    <article class="tool-card" data-tool="nick-gen" tabindex="0" role="button" aria-label="Open Nickname Generator tool">
+                        <div class="tool-card__icon tool-card__icon--orange">
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <h3 class="tool-card__title">Nickname Generator</h3>
+                        <p class="tool-card__desc">Generate stylized Minecraft nicknames with color gradients</p>
+                        <span class="tool-card__badge">Fun</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHAR CREATOR -->
+        <section class="section" id="phar-creator" data-section="phar-creator">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">PHAR <span class="accent">Creator</span></h2>
+                <p class="section-desc">Build a PocketMine-MP .phar plugin file directly in your browser. Fill in plugin details and source code, then download the ready-to-use .phar file.</p>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="pharName">Plugin Name <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="pharName" placeholder="MyPlugin" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pharVersion">Version</label>
+                        <input class="form-input" type="text" id="pharVersion" placeholder="1.0.0" value="1.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pharApi">API Version</label>
+                        <input class="form-input" type="text" id="pharApi" placeholder="5.0.0" value="5.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pharAuthor">Author</label>
+                        <input class="form-input" type="text" id="pharAuthor" placeholder="YourName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pharMain">Main Class</label>
+                        <input class="form-input" type="text" id="pharMain" placeholder="YourName\\MyPlugin\\Main">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="pharDescription">Description</label>
+                        <input class="form-input" type="text" id="pharDescription" placeholder="A cool PocketMine plugin">
+                    </div>
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label" for="pharCode">Main.php Source Code</label>
+                    <textarea class="form-textarea code-editor" id="pharCode" rows="20" spellcheck="false" placeholder="<?php
+
+declare(strict_types=1);
+
+namespace YourName\MyPlugin;
+
+use pocketmine\plugin\PluginBase;
+use pocketmine\event\Listener;
+
+class Main extends PluginBase implements Listener {
+
+    public function onEnable(): void {
+        $this->getLogger()->info('Plugin enabled!');
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
+}"></textarea>
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label">Additional Files (optional)</label>
+                    <div id="additionalFiles">
+                        <div class="additional-file-entry">
+                            <input class="form-input form-input--small" type="text" placeholder="Path (e.g. resources/config.yml)">
+                            <textarea class="form-textarea form-textarea--small" rows="3" placeholder="File contents..."></textarea>
+                            <button class="btn btn--small btn--ghost remove-file-btn" type="button">Remove</button>
+                        </div>
+                    </div>
+                    <button class="btn btn--small btn--outline" id="addFileBtn" type="button">+ Add File</button>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary btn--lg" id="createPharBtn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Create & Download PHAR
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHAR EXTRACTOR -->
+        <section class="section" id="phar-extractor" data-section="phar-extractor">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">PHAR <span class="accent">Extractor</span></h2>
+                <p class="section-desc">Upload a .phar file to view its contents, browse the file tree, and download extracted files as a ZIP archive.</p>
+
+                <div class="dropzone" id="pharDropzone">
+                    <div class="dropzone__inner">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" class="dropzone__icon"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <p class="dropzone__text">Drag & drop a <strong>.phar</strong> file here</p>
+                        <p class="dropzone__subtext">or click to browse</p>
+                        <input type="file" id="pharFileInput" accept=".phar" class="dropzone__input" aria-label="Upload PHAR file">
+                    </div>
+                </div>
+
+                <div class="extractor-result" id="extractorResult" style="display:none">
+                    <div class="extractor-info" id="extractorInfo"></div>
+                    <div class="extractor-layout">
+                        <div class="file-tree" id="fileTree"></div>
+                        <div class="file-preview" id="filePreview">
+                            <p class="file-preview__placeholder">Select a file to preview its contents</p>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn--primary" id="downloadZipBtn">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download as ZIP
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLUGIN SEARCH -->
+        <section class="section" id="plugin-search" data-section="plugin-search">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">Plugin <span class="accent">Search</span></h2>
+                <p class="section-desc">Search GitHub for PocketMine-MP plugins. Results are fetched live from the GitHub API.</p>
+
+                <div class="search-bar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="search-bar__icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input class="search-bar__input" type="search" id="pluginSearchInput" placeholder="Search PocketMine plugins..." autocomplete="off">
+                    <button class="btn btn--primary btn--sm" id="pluginSearchBtn">Search</button>
+                </div>
+
+                <div class="search-filters">
+                    <button class="filter-chip active" data-topic="pocketmine-mp">pocketmine-mp</button>
+                    <button class="filter-chip" data-topic="pocketmine">pocketmine</button>
+                    <button class="filter-chip" data-topic="pmmp">pmmp</button>
+                    <button class="filter-chip" data-topic="pocketmine-plugin">pocketmine-plugin</button>
+                </div>
+
+                <div class="search-results" id="searchResults">
+                    <div class="search-empty">
+                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <p>Search for PocketMine plugins to get started</p>
+                    </div>
+                </div>
+
+                <div class="pagination" id="searchPagination" style="display:none">
+                    <button class="btn btn--outline btn--sm" id="prevPageBtn" disabled>Previous</button>
+                    <span class="pagination__info" id="paginationInfo"></span>
+                    <button class="btn btn--outline btn--sm" id="nextPageBtn">Next</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CRASH PARSER -->
+        <section class="section" id="crash-parser" data-section="crash-parser">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">Crash <span class="accent">Parser</span></h2>
+                <p class="section-desc">Paste a PocketMine-MP crash dump to parse and display it with color-coded sections, stack traces, and plugin information.</p>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label" for="crashInput">Paste Crash Dump</label>
+                    <textarea class="form-textarea code-editor" id="crashInput" rows="12" placeholder="Paste your PocketMine crash dump here..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary" id="parseCrashBtn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                        Parse Crash Dump
+                    </button>
+                    <button class="btn btn--outline" id="loadSampleCrash">Load Sample</button>
+                </div>
+
+                <div class="crash-result" id="crashResult" style="display:none"></div>
+            </div>
+        </section>
+
+        <!-- TEMPLATE GENERATOR -->
+        <section class="section" id="template-gen" data-section="template-gen">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">Template <span class="accent">Generator</span></h2>
+                <p class="section-desc">Generate plugin boilerplate code with proper namespace structure, commands, and permissions. Download as a ZIP ready for development.</p>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="tplName">Plugin Name <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="tplName" placeholder="MyPlugin" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="tplNamespace">Namespace <span class="required">*</span></label>
+                        <input class="form-input" type="text" id="tplNamespace" placeholder="YourName\\MyPlugin">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="tplAuthor">Author</label>
+                        <input class="form-input" type="text" id="tplAuthor" placeholder="YourName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="tplApi">API Version</label>
+                        <input class="form-input" type="text" id="tplApi" placeholder="5.0.0" value="5.0.0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="tplDescription">Description</label>
+                        <input class="form-input" type="text" id="tplDescription" placeholder="An awesome PocketMine plugin">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="tplVersion">Version</label>
+                        <input class="form-input" type="text" id="tplVersion" placeholder="1.0.0" value="1.0.0">
+                    </div>
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label">Features</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tplListener" class="checkbox-input"> Event Listener
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tplConfig" class="checkbox-input"> Config File
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tplScheduler" class="checkbox-input"> Scheduler Task
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tplForms" class="checkbox-input"> FormAPI Support
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label">Commands</label>
+                    <div id="tplCommands">
+                        <div class="command-entry">
+                            <input class="form-input form-input--small" type="text" placeholder="Command name" data-field="name">
+                            <input class="form-input form-input--small" type="text" placeholder="Description" data-field="desc">
+                            <input class="form-input form-input--small" type="text" placeholder="Permission" data-field="perm">
+                            <button class="btn btn--small btn--ghost remove-cmd-btn" type="button">Remove</button>
+                        </div>
+                    </div>
+                    <button class="btn btn--small btn--outline" id="addCmdBtn" type="button">+ Add Command</button>
+                </div>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label">Code Preview</label>
+                    <div class="code-preview" id="tplPreview"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary btn--lg" id="generateTemplateBtn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Generate & Download ZIP
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVER PINGER -->
+        <section class="section" id="server-pinger" data-section="server-pinger">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">Server <span class="accent">Pinger</span></h2>
+                <p class="section-desc">Ping any Minecraft Bedrock Edition server to see MOTD, player count, version, and more.</p>
+
+                <div class="pinger-form">
+                    <div class="form-group form-group--grow">
+                        <label class="form-label" for="pingerHost">Server Address</label>
+                        <input class="form-input" type="text" id="pingerHost" placeholder="play.example.com">
+                    </div>
+                    <div class="form-group form-group--small">
+                        <label class="form-label" for="pingerPort">Port</label>
+                        <input class="form-input" type="number" id="pingerPort" placeholder="19132" value="19132">
+                    </div>
+                    <div class="form-group form-group--btn">
+                        <button class="btn btn--primary btn--lg" id="pingServerBtn">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            Ping
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pinger-result" id="pingerResult" style="display:none"></div>
+
+                <div class="pinger-popular">
+                    <h3 class="subsection-title">Popular Servers</h3>
+                    <div class="popular-servers-grid" id="popularServers">
+                        <button class="popular-server" data-host="play.nethergames.org" data-port="19132">
+                            <span class="popular-server__name">NetherGames</span>
+                            <span class="popular-server__host">play.nethergames.org</span>
+                        </button>
+                        <button class="popular-server" data-host="geo.hivebedrock.network" data-port="19132">
+                            <span class="popular-server__name">The Hive</span>
+                            <span class="popular-server__host">geo.hivebedrock.network</span>
+                        </button>
+                        <button class="popular-server" data-host="play.cubecraft.net" data-port="19132">
+                            <span class="popular-server__name">CubeCraft</span>
+                            <span class="popular-server__host">play.cubecraft.net</span>
+                        </button>
+                        <button class="popular-server" data-host="mco.mineplex.com" data-port="19132">
+                            <span class="popular-server__name">Mineplex</span>
+                            <span class="popular-server__host">mco.mineplex.com</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOTD GENERATOR -->
+        <section class="section" id="motd-gen" data-section="motd-gen">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">MOTD <span class="accent">Generator</span></h2>
+                <p class="section-desc">Create colorful server MOTD (Message of the Day) using Minecraft formatting codes. Click colors and styles to insert them.</p>
+
+                <div class="motd-editor">
+                    <div class="motd-colors">
+                        <h4 class="motd-colors__title">Colors</h4>
+                        <div class="motd-colors__grid" id="motdColorGrid"></div>
+                        <h4 class="motd-colors__title">Formatting</h4>
+                        <div class="motd-format__grid" id="motdFormatGrid"></div>
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label class="form-label" for="motdInput">MOTD Text (Line 1)</label>
+                        <input class="form-input form-input--lg" type="text" id="motdInput" placeholder="§aWelcome to §b§lMy Server">
+                    </div>
+                    <div class="form-group form-group--full">
+                        <label class="form-label" for="motdInput2">MOTD Text (Line 2)</label>
+                        <input class="form-input form-input--lg" type="text" id="motdInput2" placeholder="§7Survival §8| §7Creative §8| §7Minigames">
+                    </div>
+
+                    <div class="motd-preview-box">
+                        <h4 class="motd-preview__title">Live Preview</h4>
+                        <div class="motd-preview" id="motdPreview">
+                            <div class="motd-preview__line" id="motdPreviewLine1"></div>
+                            <div class="motd-preview__line" id="motdPreviewLine2"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn--primary" id="copyMotdBtn">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy MOTD
+                        </button>
+                        <button class="btn btn--outline" id="clearMotdBtn">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NICKNAME GENERATOR -->
+        <section class="section" id="nick-gen" data-section="nick-gen">
+            <div class="container">
+                <button class="back-btn" data-back aria-label="Back to home">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back
+                </button>
+                <h2 class="section-title pixel-font">Nickname <span class="accent">Generator</span></h2>
+                <p class="section-desc">Create stylized Minecraft nicknames with color codes and gradients. Preview in real Minecraft colors.</p>
+
+                <div class="form-group form-group--full">
+                    <label class="form-label" for="nickInput">Enter Nickname</label>
+                    <input class="form-input form-input--lg" type="text" id="nickInput" placeholder="Steve" maxlength="16">
+                </div>
+
+                <div class="nick-gradient-section">
+                    <h4 class="subsection-title">Gradient Presets</h4>
+                    <div class="gradient-presets" id="gradientPresets"></div>
+                    <div class="gradient-custom">
+                        <label class="form-label">Custom Gradient</label>
+                        <div class="gradient-pickers">
+                            <input type="color" id="gradStart" value="#ff5555" class="color-picker">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6b7280" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <input type="color" id="gradEnd" value="#55ff55" class="color-picker">
+                            <button class="btn btn--primary btn--sm" id="applyGradientBtn">Apply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nick-preview-box">
+                    <h4 class="motd-preview__title">Preview</h4>
+                    <div class="nick-preview" id="nickPreview">
+                        <span class="nick-preview__placeholder">Type a nickname above</span>
+                    </div>
+                </div>
+
+                <div class="nick-output-box">
+                    <h4 class="subsection-title">Output Code</h4>
+                    <div class="nick-output" id="nickOutput">
+                        <code id="nickOutputCode"></code>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary" id="copyNickBtn">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                        Copy Code
+                    </button>
+                    <button class="btn btn--outline" id="randomNickBtn">Random Gradient</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Mobile Navigation -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#home" class="bottom-nav__item active" data-section="home" aria-label="Home">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            <span>Home</span>
+        </a>
+        <a href="#phar-creator" class="bottom-nav__item" data-section="phar-creator" aria-label="PHAR">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>PHAR</span>
+        </a>
+        <a href="#plugin-search" class="bottom-nav__item" data-section="plugin-search" aria-label="Search">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>Search</span>
+        </a>
+        <a href="#server-pinger" class="bottom-nav__item" data-section="server-pinger" aria-label="Pinger">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span>Pinger</span>
+        </a>
+        <a href="#motd-gen" class="bottom-nav__item" data-section="motd-gen" aria-label="More tools">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <span>More</span>
+        </a>
+    </nav>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer__text">PocketMine Tools &mdash; Free open-source tools for PMMP/Bedrock server developers</p>
+            <p class="footer__links">
+                <a href="https://github.com/pmmp/PocketMine-MP" target="_blank" rel="noopener">PocketMine-MP</a>
+                <span class="footer__sep">&middot;</span>
+                <a href="https://poggit.pmmp.io/" target="_blank" rel="noopener">Poggit</a>
+                <span class="footer__sep">&middot;</span>
+                <a href="https://discord.gg/bmstcgq" target="_blank" rel="noopener">PMMP Discord</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/phar.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/crashdump.js" defer></script>
+    <script src="js/template.js" defer></script>
+    <script src="js/pinger.js" defer></script>
+    <script src="js/motd.js" defer></script>
+</body>
+</html>
