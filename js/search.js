@@ -39,21 +39,30 @@
     prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; doSearch(); } });
     nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; doSearch(); } });
 
-    // Load recent plugins on page open (observe when section becomes visible)
+    // Load recent plugins when section becomes visible
     let recentLoaded = false;
-    const observer = new MutationObserver(() => {
-        const section = document.getElementById('plugin-search');
-        if (section && section.classList.contains('active') && !recentLoaded) {
+
+    // Watch for navigation to plugin-search section
+    window.addEventListener('hashchange', () => {
+        if (window.location.hash === '#plugin-search' && !recentLoaded) {
             recentLoaded = true;
             loadRecent();
         }
     });
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
-    // Also check immediately
-    if (document.getElementById('plugin-search')?.classList.contains('active') && !recentLoaded) {
+    // If already on plugin-search on page load
+    if (window.location.hash === '#plugin-search') {
         recentLoaded = true;
         loadRecent();
     }
+    // Also hook into tool card clicks (they set hash before hashchange fires)
+    document.querySelectorAll('[data-tool="plugin-search"]').forEach(el => {
+        el.addEventListener('click', () => {
+            if (!recentLoaded) {
+                recentLoaded = true;
+                setTimeout(loadRecent, 50);
+            }
+        });
+    });
 
     async function loadRecent() {
         showLoading();
