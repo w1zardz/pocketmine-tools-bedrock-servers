@@ -403,7 +403,7 @@ class Main extends PluginBase implements Listener {
                     Back
                 </button>
                 <h2 class="section-title pixel-font">Plugin <span class="accent">Search</span></h2>
-                <p class="section-desc">Search plugins from Poggit (official PMMP repository) and GitHub. Finds real PocketMine plugins by detecting <code>plugin.yml</code> and <code>.poggit.yml</code> files.</p>
+                <p class="section-desc">Browse recent PocketMine plugins or search by name. Results from Poggit (official PMMP repository) and GitHub.</p>
 
                 <div class="search-bar">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" class="search-bar__icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -429,9 +429,9 @@ class Main extends PluginBase implements Listener {
                 <div class="search-stats" id="searchStats" style="display:none"></div>
 
                 <div class="search-results" id="searchResults">
-                    <div class="search-empty">
-                        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                        <p>Search for PocketMine plugins to get started</p>
+                    <div style="text-align:center;padding:40px">
+                        <div class="spinner"></div>
+                        <p style="margin-top:12px;color:var(--text-secondary)">Loading recent plugins...</p>
                     </div>
                 </div>
 

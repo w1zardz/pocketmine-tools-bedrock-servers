@@ -39,9 +39,52 @@
     prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; doSearch(); } });
     nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; doSearch(); } });
 
+    // Load recent plugins on page open (observe when section becomes visible)
+    let recentLoaded = false;
+    const observer = new MutationObserver(() => {
+        const section = document.getElementById('plugin-search');
+        if (section && section.classList.contains('active') && !recentLoaded) {
+            recentLoaded = true;
+            loadRecent();
+        }
+    });
+    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    // Also check immediately
+    if (document.getElementById('plugin-search')?.classList.contains('active') && !recentLoaded) {
+        recentLoaded = true;
+        loadRecent();
+    }
+
+    async function loadRecent() {
+        showLoading();
+        try {
+            // Fetch recent from GitHub (recently updated pocketmine PHP repos)
+            const resp = await fetch(
+                'https://api.github.com/search/repositories?q=pocketmine+language:php&sort=updated&order=desc&per_page=15',
+                { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+            );
+            if (!resp.ok) throw new Error('GitHub API error');
+            const data = await resp.json();
+
+            showStats('Recently updated PocketMine plugins');
+            resultsContainer.innerHTML = '';
+            for (const repo of (data.items || [])) {
+                resultsContainer.appendChild(createGitHubCard(repo));
+            }
+            pagination.style.display = 'none';
+        } catch (e) {
+            showEmpty('Search for PocketMine plugins to get started');
+        }
+    }
+
     async function doSearch() {
         const query = searchInput.value.trim();
-        if (!query) { showEmpty('Type a plugin name to search'); return; }
+        if (!query) {
+            // If empty query, show recent plugins
+            recentLoaded = false;
+            loadRecent();
+            return;
+        }
         currentQuery = query;
         showLoading();
 
